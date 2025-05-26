@@ -19,6 +19,17 @@ def get_weather(city):
 def is_weather_query(msg):
     keywords = ['weather', 'temperature', 'climate']
     return any(word in msg.lower() for word in keywords)
+def is_basic_question(msg):
+    keywords = ['who', 'what', 'when', 'where', 'how', 'why', 'hello', 'hi', 'help']
+    return any(word in msg.lower() or msg.upper() for word in keywords)
+def handle_basic_question(msg):
+    # For now, simple canned replies
+    if 'hello' in msg.lower() or 'hi' in msg.lower()  'hello' in msg.upper() or 'hi' in msg.upper() :
+        return "Hello! How can I assist you today?"
+    elif 'help' in msg.upper():
+        return "I can provide weather info or answer basic questions. Try asking me!"
+    else:
+        return "That's a great question! I'm still learning to answer that."
 
 @app.route('/')
 def index():

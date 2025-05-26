@@ -8,7 +8,8 @@ app = Flask(__name__)
 # Replace this with your actual key
 WEATHER_API_KEY = os.getenv("WEATHER_API_KEY")
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
-model = genai.GenerativeModel('gemini-pro')def get_weather(city):
+model = genai.GenerativeModel('gemini-pro')
+def get_weather(city):
     url = f'https://api.openweathermap.org/data/2.5/weather?q={city}&appid={WEATHER_API_KEY}&units=metric'
     response = requests.get(url)
     if response.status_code == 200:

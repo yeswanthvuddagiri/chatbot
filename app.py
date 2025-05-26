@@ -7,7 +7,7 @@ app = Flask(__name__)
 
 # Replace this with your actual key
 WEATHER_API_KEY = os.getenv("WEATHER_API_KEY")
-openai.api_key = os.getenv("OPENAI_API_KEY")
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 def get_weather(city):
     url = f'https://api.openweathermap.org/data/2.5/weather?q={city}&appid={WEATHER_API_KEY}&units=metric'
     response = requests.get(url)
@@ -23,8 +23,8 @@ def is_weather_query(msg):
     keywords = ['weather', 'temperature', 'climate']
     return any(word in msg.lower() for word in keywords)
 def ask_gpt(question):
-    response = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo",
+ response = client.chat.completions.create(
+     model="gpt-3.5-turbo",
         messages=[
             {"role": "system", "content": "You are a helpful assistant."},
             {"role": "user", "content": question}

@@ -1,14 +1,14 @@
 from flask import Flask, render_template, request, jsonify
 import requests
 import os
-from openai import OpenAI
+import google.generativeai as genai
 
 app = Flask(__name__)
 
 # Replace this with your actual key
 WEATHER_API_KEY = os.getenv("WEATHER_API_KEY")
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-def get_weather(city):
+genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+model = genai.GenerativeModel('gemini-pro')def get_weather(city):
     url = f'https://api.openweathermap.org/data/2.5/weather?q={city}&appid={WEATHER_API_KEY}&units=metric'
     response = requests.get(url)
     if response.status_code == 200:
@@ -22,17 +22,12 @@ def get_weather(city):
 def is_weather_query(msg):
     keywords = ['weather', 'temperature', 'climate']
     return any(word in msg.lower() for word in keywords)
-def ask_gpt(question):
-    response = client.chat.completions.create(
-        model="gpt-3.5-turbo",
-        messages=[
-            {"role": "system", "content": "You are a helpful assistant."},
-            {"role": "user", "content": question}
-        ],
-        max_tokens=150,
-        temperature=0.7
-    )
-    return response.choices[0].message.content.strip()
+def get_gemini_response(prompt):
+    try:
+        response = model.generate_content(prompt)
+        return response.text
+    except Exception as e:
+        return "Sorry, I couldn't process that with That."
 
 @app.route('/')
 def index():
@@ -42,13 +37,19 @@ def index():
 def chat():
     user_msg = request.json.get('message')
 
-    if 'weather' in user_msg.lower():
-        # Your weather function here (replace as needed)
-        reply = "Weather info coming soon..."
+    if is_weather_query(user_msg):
+        city = user_msg.split()[-1]
+        reply = get_weather(city)
+    elif 'joke' in user_msg.lower():
+        reply = get_joke()
+    elif 'define' in user_msg.lower():
+        word = user_msg.lower().split("define")[-1].strip()
+        reply = get_definition(word)
     else:
-        reply = ask_gpt(user_msg)
+        reply = get_gemini_response(user_msg)
 
     return jsonify({'reply': reply})
+
 
 if __name__ == '__main__':
     app.run(debug=True,host="0.0.0.0", port=5000)

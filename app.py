@@ -24,9 +24,9 @@ def is_basic_question(msg):
     return any(word in msg.lower() or msg.upper() for word in keywords)
 def handle_basic_question(msg):
     # For now, simple canned replies
-    if 'hello' in msg.lower() or 'hi' in msg.lower()  'hello' in msg.upper() or 'hi' in msg.upper() :
+    if 'hello' in msg.lower() or 'hi' in msg.lower() :
         return "Hello! How can I assist you today?"
-    elif 'help' in msg.upper():
+    elif 'help' in msg.lower():
         return "I can provide weather info or answer basic questions. Try asking me!"
     else:
         return "That's a great question! I'm still learning to answer that."

@@ -23,16 +23,17 @@ def is_weather_query(msg):
     keywords = ['weather', 'temperature', 'climate']
     return any(word in msg.lower() for word in keywords)
 def ask_gpt(question):
-     response = client.chat.completions.create(
-     model="gpt-3.5-turbo",
+    response = client.chat.completions.create(
+        model="gpt-3.5-turbo",
         messages=[
             {"role": "system", "content": "You are a helpful assistant."},
             {"role": "user", "content": question}
         ],
         max_tokens=150,
-        temperature=0.7,
-     )
-     return response.choices[0].message['content'].strip()
+        temperature=0.7
+    )
+    return response.choices[0].message.content.strip()
+
 @app.route('/')
 def index():
     return render_template('s1.html')

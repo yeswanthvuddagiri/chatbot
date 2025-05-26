@@ -49,3 +49,4 @@ tzdata==2023.3
 urllib3==2.4.0
 Werkzeug==3.0.4
 gunicorn
+openai

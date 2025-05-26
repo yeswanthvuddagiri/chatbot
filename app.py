@@ -40,13 +40,13 @@ def chat():
     user_msg = request.json.get('message')
 
     if is_weather_query(user_msg):
-        # Basic city name extraction (customize this later)
-        words = user_msg.split()
-        city = words[-1]  # assumes last word is city
+        # Extract city, etc.
+        city = user_msg.split()[-1]
         bot_reply = get_weather(city)
+    elif is_basic_question(user_msg):
+        bot_reply = handle_basic_question(user_msg)
     else:
-        # Simple chatbot fallback
-        bot_reply = f"You said: '{user_msg}' — I'm still learning! Ask me about the weather 🌦️"
+        bot_reply = "Sorry, I didn't understand that. Try asking about weather or say hi!"
 
     return jsonify({'reply': bot_reply})
 

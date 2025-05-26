@@ -31,8 +31,8 @@ def ask_gpt(question):
         ],
         max_tokens=150,
         temperature=0.7,
-    )
-    return response.choices[0].message['content'].strip()
+     )
+     return response.choices[0].message['content'].strip()
 @app.route('/')
 def index():
     return render_template('s1.html')

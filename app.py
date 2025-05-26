@@ -1,10 +1,13 @@
 from flask import Flask, render_template, request, jsonify
 import requests
 import os
+import openai
+
 app = Flask(__name__)
 
 # Replace this with your actual key
 WEATHER_API_KEY = os.getenv("WEATHER_API_KEY")
+openai.api_key = os.getenv("OPENAI_API_KEY")
 def get_weather(city):
     url = f'https://api.openweathermap.org/data/2.5/weather?q={city}&appid={WEATHER_API_KEY}&units=metric'
     response = requests.get(url)
@@ -19,18 +22,17 @@ def get_weather(city):
 def is_weather_query(msg):
     keywords = ['weather', 'temperature', 'climate']
     return any(word in msg.lower() for word in keywords)
-def is_basic_question(msg):
-    keywords = ['who', 'what', 'when', 'where', 'how', 'why', 'hello', 'hi', 'help']
-    return any(word in msg.lower() or msg.upper() for word in keywords)
-def handle_basic_question(msg):
-    # For now, simple canned replies
-    if 'hello' in msg.lower() or 'hi' in msg.lower() :
-        return "Hello! How can I assist you today?"
-    elif 'help' in msg.lower():
-        return "I can provide weather info or answer basic questions. Try asking me!"
-    else:
-        return "That's a great question! I'm still learning to answer that."
-
+def ask_gpt(question):
+    response = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages=[
+            {"role": "system", "content": "You are a helpful assistant."},
+            {"role": "user", "content": question}
+        ],
+        max_tokens=150,
+        temperature=0.7,
+    )
+    return response.choices[0].message['content'].strip()
 @app.route('/')
 def index():
     return render_template('s1.html')
@@ -39,16 +41,13 @@ def index():
 def chat():
     user_msg = request.json.get('message')
 
-    if is_weather_query(user_msg):
-        # Extract city, etc.
-        city = user_msg.split()[-1]
-        bot_reply = get_weather(city)
-    elif is_basic_question(user_msg):
-        bot_reply = handle_basic_question(user_msg)
+    if 'weather' in user_msg.lower():
+        # Your weather function here (replace as needed)
+        reply = "Weather info coming soon..."
     else:
-        bot_reply = "Sorry, I didn't understand that. Try asking about weather or say hi!"
+        reply = ask_gpt(user_msg)
 
-    return jsonify({'reply': bot_reply})
+    return jsonify({'reply': reply})
 
 if __name__ == '__main__':
     app.run(debug=True,host="0.0.0.0", port=5000)

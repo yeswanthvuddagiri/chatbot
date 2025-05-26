@@ -1,0 +1,44 @@
+from flask import Flask, render_template, request, jsonify
+import requests
+
+app = Flask(__name__)
+
+# Replace this with your actual key
+WEATHER_API_KEY = '277d94cea2554dc6380e75a59b35adaa'
+
+def get_weather(city):
+    url = f'https://api.openweathermap.org/data/2.5/weather?q={city}&appid={WEATHER_API_KEY}&units=metric'
+    response = requests.get(url)
+    if response.status_code == 200:
+        data = response.json()
+        temp = data['main']['temp']
+        condition = data['weather'][0]['description']
+        return f"The weather in {city.title()} is {temp}°C with {condition}."
+    else:
+        return f"Sorry, I couldn’t fetch weather info for '{city}'."
+
+def is_weather_query(msg):
+    keywords = ['weather', 'temperature', 'climate']
+    return any(word in msg.lower() for word in keywords)
+
+@app.route('/')
+def index():
+    return render_template('s1.html')
+
+@app.route('/chat', methods=['POST'])
+def chat():
+    user_msg = request.json.get('message')
+
+    if is_weather_query(user_msg):
+        # Basic city name extraction (customize this later)
+        words = user_msg.split()
+        city = words[-1]  # assumes last word is city
+        bot_reply = get_weather(city)
+    else:
+        # Simple chatbot fallback
+        bot_reply = f"You said: '{user_msg}' — I'm still learning! Ask me about the weather 🌦️"
+
+    return jsonify({'reply': bot_reply})
+
+if __name__ == '__main__':
+    app.run(debug=True,host="0.0.0.0", port=5000)

@@ -1,4 +1,4 @@
-+<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -83,37 +83,6 @@
       <button onclick="sendMessage()">Send</button>
     </div>
   </div>
-  <script>
-    self.addEventListener('install', (event) => {
-  console.log('Service Worker: Installed');
-  event.waitUntil(
-    caches.open('weather-chatbot-cache').then((cache) => {
-      return cache.addAll([
-        '/',
-        '/index.html',
-        '/style.css',
-        '/app.js',
-        '/manifest.json',
-        '/icons/icon-192x192.png',
-        '/icons/icon-512x512.png'
-      ]);
-    })
-  );
-});
-
-self.addEventListener('activate', (event) => {
-  console.log('Service Worker: Activated');
-    });
-
-     self.addEventListener('fetch', (event) => {
-     event.respondWith(
-    caches.match(event.request).then((cacheResponse) => {
-      return cacheResponse || fetch(event.request);
-    })
-    );
-    });
-
-  </script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {

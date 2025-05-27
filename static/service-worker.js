@@ -5,12 +5,12 @@ self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open('weather-chatbot-cache').then((cache) => {
       return cache.addAll([
-        '/',
-        '/app.js',
-        '/manifest.json',
-        '/icons/icon-192x192.png',
-        '/icons/icon-512x512.png'
+  '/',
+  '/s1.html',
+  '/manifest.json',  // Optional: only if you actually have it
+   '/service-worker.js'
       ]);
+
     })
   );
 });

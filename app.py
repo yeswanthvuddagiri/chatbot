@@ -33,6 +33,11 @@ def get_gemini_response(prompt):
 @app.route('/')
 def index():
     return render_template('s1.html')
+@app.route('/service-worker.js')
+def sw():
+    return app.send_static_file('service-worker.js')
+    
+    
 
 @app.route('/chat', methods=['POST'])
 def chat():

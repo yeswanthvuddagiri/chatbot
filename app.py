@@ -5,10 +5,10 @@ import google.generativeai as genai
 
 app = Flask(__name__)
 
-# Replace this with your actual key
 WEATHER_API_KEY = os.getenv("WEATHER_API_KEY")
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 model = genai.GenerativeModel('gemini-pro')
+
 def get_weather(city):
     url = f'https://api.openweathermap.org/data/2.5/weather?q={city}&appid={WEATHER_API_KEY}&units=metric'
     response = requests.get(url)
@@ -23,20 +23,22 @@ def get_weather(city):
 def is_weather_query(msg):
     keywords = ['weather', 'temperature', 'climate']
     return any(word in msg.lower() for word in keywords)
+
 def get_gemini_response(prompt):
     try:
-        response = model.generate_content(prompt)
+        response = model.generate_text(prompt=prompt)  # Corrected method here
         return response.text
     except Exception as e:
-        return "Sorry, I couldn't process that with That."
+        print(f"Gemini API error: {e}")
+        return "Sorry, I couldn't process that."
 
 @app.route('/')
 def index():
     return render_template('s1.html')
+
 @app.route('/service-worker.js')
 def service_worker():
     return send_from_directory('static', 'service-worker.js')
-    
 
 @app.route('/chat', methods=['POST'])
 def chat():
@@ -45,16 +47,10 @@ def chat():
     if is_weather_query(user_msg):
         city = user_msg.split()[-1]
         reply = get_weather(city)
-    elif 'joke' in user_msg.lower():
-        reply = get_joke()
-    elif 'define' in user_msg.lower():
-        word = user_msg.lower().split("define")[-1].strip()
-        reply = get_definition(word)
     else:
         reply = get_gemini_response(user_msg)
 
     return jsonify({'reply': reply})
 
-
 if __name__ == '__main__':
-    app.run(debug=True,host="0.0.0.0", port=5000)
+    app.run(debug=True, host="0.0.0.0", port=5000)

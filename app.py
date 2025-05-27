@@ -26,11 +26,12 @@ def is_weather_query(msg):
 
 def get_gemini_response(prompt):
     try:
-        response = model.generate_text(prompt=prompt)  # Corrected method here
+        response = model.generate_content(prompt)
         return response.text
     except Exception as e:
         print(f"Gemini API error: {e}")
         return "Sorry, I couldn't process that."
+
 
 @app.route('/')
 def index():

@@ -6,8 +6,6 @@ self.addEventListener('install', (event) => {
     caches.open('weather-chatbot-cache').then((cache) => {
       return cache.addAll([
   '/',
-  '/s1.html',
-  '/manifest.json',  // Optional: only if you actually have it
    '/service-worker.js'
       ]);
 

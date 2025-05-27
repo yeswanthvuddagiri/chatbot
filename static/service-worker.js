@@ -1,26 +1,35 @@
-// service-worker.js
-
-self.addEventListener('install', (event) => {
-  console.log('Service Worker: Installed');
-  event.waitUntil(
-    caches.open('weather-chatbot-cache').then((cache) => {
-      return cache.addAll([
+const CACHE_NAME = 'chatbot-cache-v1';
+const urlsToCache = [
   '/',
-   '/service-worker.js'
-      ]);
+  '/static/manifest.json',
+  '/static/styles.css', // if you have it
+  '/static/logo.png',   // if you use any icons
+];
 
+self.addEventListener('install', event => {
+  event.waitUntil(
+    caches.open(CACHE_NAME).then(cache => {
+      return cache.addAll(urlsToCache);
     })
   );
 });
 
-self.addEventListener('activate', (event) => {
-  console.log('Service Worker: Activated');
-});
+self.addEventListener('fetch', event => {
+  const url = new URL(event.request.url);
 
-self.addEventListener('fetch', (event) => {
+  // Don't cache POST requests or dynamic data like /chat
+  if (event.request.method !== 'GET' || url.pathname === '/chat') {
+    return;
+  }
+
   event.respondWith(
-    caches.match(event.request).then((cacheResponse) => {
-      return cacheResponse || fetch(event.request);
+    caches.match(event.request).then(response => {
+      return response || fetch(event.request);
+    }).catch(() => {
+      return new Response('Offline', {
+        status: 503,
+        statusText: 'Offline',
+      });
     })
   );
 });

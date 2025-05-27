@@ -29,8 +29,9 @@ def get_gemini_response(prompt):
         response = model.generate_content(prompt)
         return response.text
     except Exception as e:
-        print(f"Gemini API error: {e}")
+        print("Gemini API error:", e)
         return "Sorry, I couldn't process that."
+
 
 
 @app.route('/')

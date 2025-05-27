@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, send_from_directory
 import requests
 import os
 import google.generativeai as genai
@@ -34,9 +34,8 @@ def get_gemini_response(prompt):
 def index():
     return render_template('s1.html')
 @app.route('/service-worker.js')
-def sw():
-    return app.send_static_file('service-worker.js')
-    
+def service_worker():
+    return send_from_directory('static', 'service-worker.js')
     
 
 @app.route('/chat', methods=['POST'])

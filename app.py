@@ -32,6 +32,13 @@ def get_gemini_response(prompt):
     except Exception as e:
         print("Gemini API error:", e)
         return "Sorry, I couldn't process that."
+@app.route('/list-models')
+def list_models():
+    try:
+        models = genai.list_models()
+        return jsonify(models)
+    except Exception as e:
+        return jsonify({"error": str(e)})
 
 
 @app.route('/')

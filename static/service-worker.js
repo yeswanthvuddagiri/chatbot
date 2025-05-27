@@ -6,8 +6,6 @@ self.addEventListener('install', (event) => {
     caches.open('weather-chatbot-cache').then((cache) => {
       return cache.addAll([
         '/',
-        '/index.html',
-        '/style.css',
         '/app.js',
         '/manifest.json',
         '/icons/icon-192x192.png',

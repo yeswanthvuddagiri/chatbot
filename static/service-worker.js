@@ -2,8 +2,6 @@ const CACHE_NAME = 'chatbot-cache-v1';
 const urlsToCache = [
   '/',
   '/static/manifest.json',
-  '/static/styles.css',    // optional: if you have it
-  '/static/logo.png',      // optional: if you have it
 ];
 
 // Install service worker and cache assets

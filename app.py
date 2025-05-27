@@ -7,7 +7,7 @@ app = Flask(__name__)
 
 WEATHER_API_KEY = os.getenv("WEATHER_API_KEY")
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
-model = genai.GenerativeModel('gemini-pro')
+model = genai.GenerativeModel(model_name="models/gemini-pro")  # Exact string needed
 
 def get_weather(city):
     url = f'https://api.openweathermap.org/data/2.5/weather?q={city}&appid={WEATHER_API_KEY}&units=metric'
@@ -27,11 +27,11 @@ def is_weather_query(msg):
 def get_gemini_response(prompt):
     try:
         response = model.generate_content(prompt)
+        print("Gemini raw response:", response)
         return response.text
     except Exception as e:
         print("Gemini API error:", e)
         return "Sorry, I couldn't process that."
-
 
 
 @app.route('/')

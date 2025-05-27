@@ -40,7 +40,9 @@ def index():
 @app.route('/service-worker.js')
 def service_worker():
     return send_from_directory('static', 'service-worker.js')
-
+@app.route('/static/manifest.json')
+def manifest():
+    return send_from_directory('static', 'manifest.json')
 @app.route('/chat', methods=['POST'])
 def chat():
     user_msg = request.json.get('message')

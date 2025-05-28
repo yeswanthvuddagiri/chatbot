@@ -28,21 +28,26 @@ def is_weather_query(msg):
     return any(word in msg.lower() for word in keywords)
 
 def get_cohere_response(prompt):
-    try:
-        response = co.generate(
+      try:
+            response = co.chat(
             model='command-nightly',
-            prompt=prompt,
-            max_tokens=100,
-            temperature=0.9
-        )
-        return response.generations[0].text.strip()
-    except Exception as e:
-        print("Cohere API error:", e)
-        return "Sorry, I couldn't process that."
+            message=prompt,
+            temperature=0.9,
+            max_tokens=100
+            )
+            return response.text.strip()
+ 
+      except Exception as e:
+           print("Cohere API error:", e)
+           return "Sorry, I couldn't process that."
 
 @app.route('/list-models')
 def list_models():
     return jsonify({"models": ["command-nightly"]})
+@app.route('/favicon.ico')
+def favicon():
+    return send_from_directory('static', 'favicon.ico')
+    
 
 @app.route('/')
 def index():

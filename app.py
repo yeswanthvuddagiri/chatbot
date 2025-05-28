@@ -35,10 +35,12 @@ def get_gemini_response(prompt):
 @app.route('/list-models')
 def list_models():
     try:
-        models = genai.list_models()
-        return jsonify(models)
+        models_gen = genai.list_models()  # This is a generator
+        models_list = list(models_gen)    # Convert generator to list
+        return jsonify(models_list)
     except Exception as e:
         return jsonify({"error": str(e)})
+
 
 
 @app.route('/')

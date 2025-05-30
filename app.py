@@ -15,8 +15,9 @@ COHERE_API_KEY = os.getenv("COHERE_API_KEY")
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USERNAME'] = 'your_email@gmail.com'  # Replace with your email
-app.config['MAIL_PASSWORD'] = 'your_app_password'     # Replace with Gmail App Password
+app.config['MAIL_USERNAME'] = os.getenv("MAIL_USERNAME")
+app.config['MAIL_PASSWORD'] = os.getenv("MAIL_PASSWORD")
+app.config['MAIL_DEFAULT_SENDER'] = os.getenv("MAIL_USERNAME")
 
 mail = Mail(app)
 
@@ -79,30 +80,25 @@ def chat():
         reply = get_cohere_response(user_msg)
     return jsonify({'reply': reply})
 
-@app.route('/register', methods=['POST'])
-def register_user():
+# Route to handle form submission
+@app.route('/submit-user', methods=['POST'])
+def submit_user():
     data = request.json
     name = data.get('name')
     email = data.get('email')
-    timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-    # Optional: Save user to text file
-    with open("user_log.txt", "a") as f:
-        f.write(f"{timestamp} - {name} - {email}\n")
-
-    # Send email notification to you
+    # Send email to yourself
     try:
         msg = Message(
             subject="New Chatbot User",
-            sender=app.config['MAIL_USERNAME'],
-            recipients=['your_email@gmail.com'],  # Replace with your destination email
-            body=f"New user just signed in:\n\n👤 Name: {name}\n📧 Email: {email}\n🕒 Time: {timestamp}"
+            recipients=[app.config['MAIL_USERNAME']],
+            body=f"Name: {name}\nEmail: {email}"
         )
         mail.send(msg)
-        return jsonify({"status": "success"})
+        return jsonify({'success': True})
     except Exception as e:
-        print("Email error:", e)
-        return jsonify({"status": "fail", "error": str(e)})
+        print("Error sending email:", e)
+        return jsonify({'success': False})
 
 # Run server
 if __name__ == '__main__':

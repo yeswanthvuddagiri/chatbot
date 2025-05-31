@@ -136,18 +136,34 @@
   </div>
 
   <script>
-    function handleFormSubmit(e) {
-      e.preventDefault();
-      const name = document.getElementById('name').value;
-      const email = document.getElementById('email').value;
+  function handleFormSubmit(e) {
+  e.preventDefault();
+  const name = document.getElementById('name').value;
+  const email = document.getElementById('email').value;
 
-      // Optional: Save to localStorage or send to backend
-      console.log('User:', { name, email });
-
+  // Send form data to Flask backend
+  fetch('/submit-user', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name, email })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.success) {
+      console.log('Email sent successfully!');
       // Hide form and show chat
       document.getElementById('userForm').style.display = 'none';
       document.getElementById('chatContainer').style.display = 'flex';
+    } else {
+      alert('Failed to send email. Please try again.');
     }
+  })
+  .catch(err => {
+    console.error('Error submitting user data:', err);
+    alert('Something went wrong.');
+  });
+}
+
 
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {

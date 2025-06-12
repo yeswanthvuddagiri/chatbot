@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, jsonify, send_from_directory
+from flask_cors import CORS  # ✅ Added
 import requests
 import os
 import cohere
@@ -6,12 +7,13 @@ from flask_mail import Mail, Message
 import datetime
 
 app = Flask(__name__)
+CORS(app)  # ✅ Enable CORS for all origins (or restrict if needed)
 
 # Load API keys from environment variables
 WEATHER_API_KEY = os.getenv("WEATHER_API_KEY")
 COHERE_API_KEY = os.getenv("COHERE_API_KEY")
 
-# Email settings (you can switch these to os.getenv for security)
+# Email settings
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
@@ -48,7 +50,6 @@ def get_cohere_response(prompt):
         print("Cohere API error:", e)
         return "Sorry, I couldn't process that."
 
-
 # Routes
 @app.route('/')
 def index():
@@ -80,14 +81,12 @@ def chat():
         reply = get_cohere_response(user_msg)
     return jsonify({'reply': reply})
 
-# Route to handle form submission
 @app.route('/submit-user', methods=['POST'])
 def submit_user():
     data = request.json
     name = data.get('name')
     email = data.get('email')
 
-    # Send email to yourself
     try:
         msg = Message(
             subject="New Chatbot User",
@@ -99,6 +98,7 @@ def submit_user():
     except Exception as e:
         print("Error sending email:", e)
         return jsonify({'success': False})
+
 @app.after_request
 def add_header(response):
     response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
